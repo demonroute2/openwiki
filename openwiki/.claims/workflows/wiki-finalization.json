@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:3bd932423b7415aa70bdf10a399620868034abc5117b9c0860af1d79d6a3778c",
+  "pageVersion": "sha256:c97f12751a63f2b3b72874bd9731da38e3fccf304cdc52c6628456e1ac55e0be",
   "claims": [
     {
       "id": "claim_9fea18d761f54f39a632b03243af4a9d",
@@ -429,10 +429,32 @@
           "version": "repo-lines-v1:sha256:a5b6e4bced042fa50e1854e680f0024fd40eb3b99b8b3df9b787007a93a1c5ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1MzczZmM2MmJiY2IxNGE3ZjM3OTJmMzU5ZGQxMjcyZTdjNjhiMDZiMWY4NDQxNDQwODRlMGQ5OGQzMTRkNGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3ZmMyYzQ4MWU1YzNkZGY2ZjRmYzA4YjA5ZDA4MWIyMDFjYTQ0NzU1OWRiZTQ5Njg0ZTlkZmRhYWE3ZTE5MGMifQ"
         }
       ]
+    },
+    {
+      "id": "claim_868fa8b1f85d4ad68de520448539ba8f",
+      "statement": "A heading whose visible text is all punctuation or symbols (e.g. '## 🚀') slugs to the empty string because such characters are stripped as punctuation. The link validator skips an empty slug so the heading exposes no anchor a link could target, while retrieval's headingSections aliases the first empty-slug heading to the stable literal 'section' (suffixing -1/-2/... only when 'section' is already taken, never displacing an existing GitHub anchor) so openwiki_search refs to that section use an addressable anchor that openwiki_read (readWikiSections) can open; the alias is retrieval-only and does not change on-page Markdown or validator-exposed anchors.",
+      "evidence": [
+        {
+          "resource": "repo://src/agent/wiki-link-validator.ts#L445-L449",
+          "version": "repo-lines-v1:sha256:11b8328c61143cef489c8b378a10618b9f650e99fcc266a914d209e63cfbcae1:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWE4ZGFiNThmM2NhZjM5OTVjN2I0ZGVhMmQyN2VlNWU3YTIwNjc4OGI3ZDk4M2RhY2JjODE5YzFlYTZjYmQwNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTg1ZmNkYzNlOWZkMWRkOTMzMDA5OTNlNDY2YWI1ZDZmZjg3MWJhOTU2YWQwMzI1YTViYmU1MzY1ODM1Y2VhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTcwZjgzOTlmYzgzM2U3ODEzYmIzNzVlYjAzNWExMDYzNzA3MDE3MDFhNjAzYWU0ZDJhNzY0N2E4MDZkYWYzMiJ9"
+        },
+        {
+          "resource": "repo://src/retrieval/wiki.ts#L664-L672",
+          "version": "repo-lines-v1:sha256:f69dd50f9f88beff678a7276c4c267bfa8fccab0a32e9f202cf7beff95f14baf:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzYxMDE3Mjg1YTA5NjJmYjhkZjZiNzZiNTIxNWY4YmUyMDdhM2ZjMGZkMzBjMjFiNGU2NDhjZjUzYTczZjhiYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTE3NjZmM2NmODA2NTQ3ODMwNTc0MzNmMmFjNTZlMGExNWM4YTFiMzFkNWE5MDFjNzI5YzAzMzY1YmZiODkxMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmMwZjVmMGY5MzQ3MDMwZGY4NmM2MGM0ZGM1ZWJkOWEwODY1NGRmZGQ3YjNhMTQwMzUxMDFhYjhlYmIxYTYyNCJ9"
+        },
+        {
+          "resource": "repo://src/retrieval/wiki.ts#L829-L837",
+          "version": "repo-lines-v1:sha256:620ddbddbeee14ce4f57fddf5b6f3a1e595e810e70c528e8c2bee7392d23c1b1:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTcxYzMzYWEwYTRmMjVhNDFhYTI0ODhiZTkyYjU4NzAzNDI0MzlmODlhM2MxNTI5ZTk5MmUxYzM3OTg5MTIwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmE0ZWY0MmUyNmNhMzY5Nzg2NmQ4NjM2MjA1N2U1MzMxMmQyMzgzZjkxMDUyOGY1ZGU0ZTk1YWRmZDM3OTE2NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGU0MjlhOTA3ZjM3NGFmNDJhMzJiMzExOWI0Mjc2YzE0MmI2MWU1OTU4YWUwMWIyZTY1ZWVhZDBlNWFmYTEzYyJ9"
+        },
+        {
+          "resource": "repo://src/retrieval/wiki.ts#L95-L98",
+          "version": "repo-lines-v1:sha256:bdbc3ba612cfbea7681acbd3cf2e38407787daaa1c83f7d92f5eec02df7ff117:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGU5NjExZWFjZjIxYjMwYzA4NTA5ODEzYmQ4Yjc5Mzk5NzUxMDI0YzlhOWJlOTNlYWZkMTI3Yzk5M2ZkZmYyOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGJkOTM1ODc4YjU2MjVjYTVmZjk1ZDNhZTEwODFiODEzNzRkNTY1Nzk1MjIxZGFjOWNhMmI5MTQwYjM3MTkwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTA2OGY1MWNjYTI3ZjhiYzQ0YjM1MTMzODY0NjVkNjE1Yzk4MGQwNzdkOGNlOWE2NzI5NzdkMDQ2YjAxNjdiYyJ9"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.1",
-    "at": "2026-10-07T08:10:39.081Z"
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-12T08:24:07.067Z"
   }
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:1804899e3774ca7dc45ba832306fe4cdb27ace8ccf73d49136f8b39a3bcb248a",
+  "pageVersion": "sha256:03a4b9341dfcbe12605b128e2de76fcd50cd56afe1e231441f531c966e3ed01f",
   "claims": [
     {
       "id": "claim_244d2a0a18984ed9bfac7bdabf596487",
@@ -234,47 +234,63 @@
     },
     {
       "id": "claim_9ac5503138144eccab656b02d470574e",
-      "statement": "Installation writes a .openwiki-install.json ownership receipt recording the owning package, OpenWiki version, host target, installed MCP command, and per-file SHA-256 hashes; inspectInstallation uses it to classify a skill destination as not-installed, installed (intact), or modified.",
+      "statement": "Installation writes a .openwiki-install.json ownership receipt recording the owning package, OpenWiki version, per-file SHA-256 hashes, and an owners map (Partial<Record<HostTargetId, HostMcpServerCommand>>) that lets several hosts co-own one skill directory; a single-owner install keeps the legacy target/mcpServerCommand shape byte-for-byte, and readReceipt accepts either shape and normalizes to owners. inspectInstallation classifies a destination as not-installed (absent, or intact but owned only by other hosts — still returning that receipt so the target can join), installed (intact and the inspecting target is among the owners), or modified (present but altered/unmanaged).",
       "evidence": [
         {
-          "resource": "repo://src/integrations/install/skill-bundle.ts#L12-L43",
-          "version": "repo-lines-v1:sha256:08ed21aa7fa4f7e9acb4162a4a808cf2e179212fbf06416fec57b4c67d256fb8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxYjNmNmRmZTY5YzI2YmRhZWQxZjg5Zjc2ODEyYTM3MjY5Y2JlOTljN2Y4Y2VlYTNjZGU0ZmZkOWIyMGYxZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxOTAwMzgwYTYwMmQ2NmRjMTljNTYzMmY1ZjA5NjM0NWU1ZjUzYTMxY2M2NTkyYjdiNmFmODk2MTY5OTJhYWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3NTgxYjE4ZWM3ZGMwMTBkZDZhM2Y1OTBkMjc1YzdkMmUzOTk0OWQyZTg4ZmZjNzgyZjJkZmY4NjVlNWVlYjcifQ"
+          "resource": "repo://src/integrations/install/skill-bundle.ts#L13-L43",
+          "version": "repo-lines-v1:sha256:e82ea7c7db6682da31f45b7cc4668659e411dae649e6c4ec88615157ba0b2701:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxYjNmNmRmZTY5YzI2YmRhZWQxZjg5Zjc2ODEyYTM3MjY5Y2JlOTljN2Y4Y2VlYTNjZGU0ZmZkOWIyMGYxZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxOTAwMzgwYTYwMmQ2NmRjMTljNTYzMmY1ZjA5NjM0NWU1ZjUzYTMxY2M2NTkyYjdiNmFmODk2MTY5OTJhYWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA2MmY3YzFhMGJkNDA3MzMwMzBiNWRhNGYyZjViOTc4N2Y5ZWMyNGU5Y2RlN2FlY2Q1OTgyM2Y3ZWYyNzg2OTEifQ"
         },
         {
-          "resource": "repo://src/integrations/install/skill-bundle.ts#L200-L226",
-          "version": "repo-lines-v1:sha256:d9be161097c7f41e9a4469a9b03bd80decb91be078202da9e02e712bef1441c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjNGY4ZjA5YTUzMDdhNjMwNTc4OWNiYTJlNDNlMmVkMjEyYjI4YWM1Zjc2Y2ZlMmI0N2JlMzJhYmE0ODc5NTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlZDU3NDZiMDQwMTU0YjZlZDA4YjYzNjU0YjU0YzgzMjk3ZWYxZWVlMmJjNGY2MWI3ZWJiNjZjN2Q1ODc1NDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2MDE5ZDRkZWE0YTg5ZWUzOTVkNWZkMjRiNmY5NmYzOWIyMzBmY2U0ODNiOWRhNmM2NWVjZDdhY2EyMmM0ZmYifQ"
+          "resource": "repo://src/integrations/install/skill-bundle.ts#L176-L198",
+          "version": "repo-lines-v1:sha256:2f72bccd4f8f49948b40f5c549a96e438bec86021772615a994a1477b49e0cc0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjODY5Y2NlNzMxZWUyNDU5OThjYjEzZDdlNzY3NWE2ZGUwOTgwYzkwYzgwNjYxMmYzNDE5NjFiOTMzNjQ1M2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4ZDQ3YWIxZDlkN2M1NzE0YjMxMjg1YzI1Njc5NjYzY2M3NWE2YjhmNmYzOThmZjViYWNkOTY1N2Y0NWRiMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1NjJkYTMyY2Y0MWUyNzdkZTI0Yjc2ZjczYmNmMmNmMjQ2YTQzZTgyNWFmNjU1MmFmOGNkNGZkZTYwOTUxYWQifQ"
+        },
+        {
+          "resource": "repo://src/integrations/install/skill-bundle.ts#L200-L241",
+          "version": "repo-lines-v1:sha256:553c93e7b60b9cb15fee6c177c013db28af1cac0ecd9adcac02858db51507f6a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2MDE5ZDRkZWE0YTg5ZWUzOTVkNWZkMjRiNmY5NmYzOWIyMzBmY2U0ODNiOWRhNmM2NWVjZDdhY2EyMmM0ZmYifQ"
+        },
+        {
+          "resource": "repo://src/integrations/install/skill-bundle.ts#L268-L316",
+          "version": "repo-lines-v1:sha256:27d20ba57b1d883b73d1e13096558ec989dbd97a4e3c07af718264cc95c88ab8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyZmUzNGE4YTBjZjBjNjczMDViNGVhYmNmNDhiOGM5NGZhYjFjZDNlMGU1MGRlYjNiODYwNzM1ODA5ZWQ0N2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzYzM0NjBlY2M2ODNmM2NlNTU5YTBmMzRhNTlhNWFiMjUyZjAyMjYyYjY2MmYwZWYzNDNhZmFhYjc5NDU5YTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiNTMzYzQzYTlhNWMzMjU2ZGJmNjNhNjdmZGMyZjliZjFhYWVmN2Y1NTMyMjNiZjA4ZWVmMzk0OTllYzBmNjMifQ"
         }
       ]
     },
     {
       "id": "claim_aae8d2afafe14af69b5dbe8efb0f24d1",
-      "statement": "The installer performs installs transactionally: it stages the canonical bundle into a private sibling, verifies the staged copy matches the canonical inventory, writes the receipt, snapshots and mutates config, moves any prior skill aside, atomically moves the staged skill into place, and rolls back config and prior skill on failure (raising AggregateError when rollback is incomplete).",
+      "statement": "The installer performs installs transactionally with a current-version fast path: when inspection reports installed and the receipt version, the target's recorded MCP command, and file hashes all match, it only reconciles config. Otherwise it stages the canonical bundle into a private sibling, verifies the staged copy matches the canonical inventory, writes a receipt whose owners merge any existing owners with the installing target, snapshots and mutates config, moves any prior skill aside, and atomically moves the staged skill into place. On failure it rolls back config, prior skill, and staging, raising AggregateError when rollback is incomplete.",
       "evidence": [
         {
-          "resource": "repo://src/integrations/install/installer.ts#L156-L237",
-          "version": "repo-lines-v1:sha256:daa53131eb87873fa4d47bdf058aefa5ec69bc4a60014b2f5ce0a9a26eb2c604:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViMWM3OWM0MGRiYzliM2I4MDQ3ODc4MzUyYWU1ZDUwZDIwNWJlNDIwMTg4MzM1ZjRhOGYxMDVkOWY5Yjc3NzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMDY5NWVlZWQzYTVkMjk4OTg4NTg2OTdjNzM2ZTFiZjc4YTg4NGJhODE4ZjY3NTQxMmQxN2ZjZmJiNjRkNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwNDI4MGFmYmE5MmY0NDE3MTc5ZjYyNDEwOTM3MDUwNmJlMDhmODgzOWVhNDVlMmQ0MDJlNWRiMWVjZGRmMjAifQ"
+          "resource": "repo://src/integrations/install/installer.ts#L156-L241",
+          "version": "repo-lines-v1:sha256:67252a723c66df01be587cb72eb126884ed681b66cdec0b8a0a79cb4d60f5480:eyJzZWxlY3RlZExpbmVDb3VudCI6ODYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViMWM3OWM0MGRiYzliM2I4MDQ3ODc4MzUyYWU1ZDUwZDIwNWJlNDIwMTg4MzM1ZjRhOGYxMDVkOWY5Yjc3NzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMDY5NWVlZWQzYTVkMjk4OTg4NTg2OTdjNzM2ZTFiZjc4YTg4NGJhODE4ZjY3NTQxMmQxN2ZjZmJiNjRkNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwNDI4MGFmYmE5MmY0NDE3MTc5ZjYyNDEwOTM3MDUwNmJlMDhmODgzOWVhNDVlMmQ0MDJlNWRiMWVjZGRmMjAifQ"
         },
         {
-          "resource": "repo://src/integrations/install/installer.ts#L383-L503",
-          "version": "repo-lines-v1:sha256:5fef58c8e2a0aba587b06dbfeab6f48ac6d25a1c654ca9a5c76a60ea9e84f2db:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmMWYzMGE3OTVjOWQ1NmYzMWVlMzJjMjA1NTZhNWJmNTVlODJjYWY1YWJmMWIwYzAxNDcxYTk2ZWQ0MWU5YWNmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5NTNhMTEyOWUxMDIyYjQ0ZmVmOGQwN2NkNTk1NzljNjYwYjU1OGIxZmY2ODA2OWQ0NmUzODU5OTViNzMyZmUwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2QwM2JiNzI0Yzk4ZGIzOWQ3YzIyYTNjMzllNDdjNjVlOWE1OWQ4NDliODNlM2RiMTRhNTJjZWRhNDhhOWQyIn0"
+          "resource": "repo://src/integrations/install/installer.ts#L397-L451",
+          "version": "repo-lines-v1:sha256:c144fb6786c49d62fef46b54a03720b0aed25f6d73f64400817b9ebde43eafba:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxZjMwYTc5NWM5ZDU2ZjMxZWUzMmMyMDU1NmE1YmY1NWU4MmNhZjVhYmYxYjBjMDE0NzFhOTZlZDQxZTlhY2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1M2ExMTI5ZTEwMjJiNDRmZWY4ZDA3Y2Q1OTU3OWM2NjBiNTU4YjFmZjY4MDY5ZDQ2ZTM4NTk5NWI3MzJmZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI3ZDFlZjVjZDE1Yjg4NDBhMGI4NzRkYzZhNWM4ZjJkNDQ2M2U3YmQ2NjIzOWE5YTRjZDc1NGVkMzA2MzIzMWQifQ"
+        },
+        {
+          "resource": "repo://src/integrations/install/installer.ts#L483-L517",
+          "version": "repo-lines-v1:sha256:ddf0a7b54b4675573b68db3a8152c10b64eb5718d96027676fd2466669f98c6b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMzM5YTFjZDI2MmZjZTY1OWJiZTk0MDlhZGU2OTIzMGViYmFlNWMzZDcwZDM0YmFjMDhkYmFjMTYyM2E3MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkNDJhMzQ1MDVjYjlkZWJkZDlhZGU5NmNhOWUxYTkyMzU4YzhkZmJlMzJiMjRkY2I4ZTVmMmViZjdmM2IyMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzZDAzYmI3MjRjOThkYjM5ZDdjMjJhM2MzOWU0N2M2NWU5YTU5ZDg0OWI4M2UzZGIxNGE1MmNlZGE0OGE5ZDIifQ"
         }
       ]
     },
     {
       "id": "claim_c8da3e9530134d18b09962884935c7ec",
-      "statement": "A modified skill destination is refused on install unless --force, which preserves the prior skill as a timestamped backup; uninstall refuses to remove a modified skill or a modified/unmanaged config entry and cleans up empty skill parents.",
+      "statement": "A modified skill destination is refused on install unless --force, which preserves the prior skill as a timestamped backup. uninstall refuses to remove a modified skill or a modified/unmanaged config entry; when other hosts still own the skill directory it writes a reduced receipt (ownersWithout, dropping the leaving host) in place instead of removing the directory, and only the last owner's uninstall moves the skill to a cleanup backup and prunes empty skill parent directories.",
       "evidence": [
         {
           "resource": "repo://src/integrations/install/installer.ts#L173-L178",
           "version": "repo-lines-v1:sha256:523d6896161e85bcfc770e5d3d80a952f1e0305215013eaa5999f49a0c770dc9:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTA0ZjhhMGM3ZTk1MWQwNDQwZGJkOTk4OWYzMjA3MDk1OGYzYWQ5YmRlYjdhZTQ0Y2UzNTNjYWYwYWRmMDg2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZmYmFmNzhkNmYyNzI0NzU5NDdmNjVkODdhNDJjNjI3Y2NlMGVhODg3MjA0ZTA5ZmY2MGMzODA2MGE2Y2UyNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWRjZjFiZDc3YjFjYWNmNzI4MDE0MmM1YmJhMjU4MmExNWYwM2ZjZjI4MjQ3ZDQ2NzRjNjViOTAzZWMzMzJmOSJ9"
         },
         {
-          "resource": "repo://src/integrations/install/installer.ts#L246-L338",
-          "version": "repo-lines-v1:sha256:d5fff5c776ed257d864d218b0d794721159243003010ddb56e949510f047d391:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyN2FjY2RhODFmOWJiYTFmZGZkYjgxNjBjNjY3ODM0YjBiNjkzZWViZDQwOWNhZWM0M2M1MjJkYWVjYWVjNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiYzNjODliY2Y0MTZhNjcyZDkxZTYxMjJiZWU1NWZiZWFiZTk5ZWZiZGIzY2Y1MjljYTc5YzdhNmVkYWM3YTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk5NWVjMmM4YjM2MzMwYTFlN2Y2OGYwZGI1NGEzOGM4YzU2MzM5NTE4NjI3NGY5ZjE1ZDk4OTI0ZTY5MWJiN2YifQ"
+          "resource": "repo://src/integrations/install/installer.ts#L246-L352",
+          "version": "repo-lines-v1:sha256:b0303e0fd5810993ba65db8428c6a4526c9d4a7ad2e0fb792ddcb124b55d8fe3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiOTJkNWVmNGExODRhOGY3MmI2ZDkxZjI4YWI0NTA1NjE5M2RjYzhiZmNlZjhhY2JhODAyOTg3OGE4ZTFmYmFmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2NGE4N2IyNjgzOGI3YzBmODE4M2QyZTQyY2M5NzA2ZDkzYWViZTU4YTRjZTEyNWEwODIzZDJmYzRhNWYzNWU4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5OTVlYzJjOGIzNjMzMGExZTdmNjhmMGRiNTRhMzhjOGM1NjMzOTUxODYyNzRmOWYxNWQ5ODkyNGU2OTFiYjdmIn0"
         },
         {
-          "resource": "repo://src/integrations/install/installer.ts#L446-L458",
-          "version": "repo-lines-v1:sha256:55604e9597f3886369292897ed8989a79520fd92483db6dca42c4cd9f027cde5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhMGIxOWQ1ODZiMTQ3ZTc4MTQwNWE0NmUzODEzMWM2OTdjYTY3ZTQ2ZTRlMGI4MzliNmM3MGEzNTczZTU0MzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzMTBmYWJiNzdjNGQ4MGFjOTVhNzcwZWVjOWRhMDZlNjZhODYwZjRlNzU0ZTUzZjI0YTJmZmU4OWRkMGY3ZTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyMDQ4NjllZjE3M2Y5OGNhZjg1YmY5ZjAzMWEyY2RkOWQxZmQ3OTg1MGJmZGY4MmMxNGNiN2Y3ZWE0OTVhNTQifQ"
+          "resource": "repo://src/integrations/install/installer.ts#L446-L471",
+          "version": "repo-lines-v1:sha256:7f9e4c8975120a897e9319884aea2e70611a212bc7b45ac1954af315399772d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhMjA1Yjg1NGU2NzFmNjM4MDdjNWNiMjhiZTcyMmRhYjg2ZTA3YjZjOTc0NmRlYzVlZDY5M2NmMjgzYTllMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhhZmEyNDUxMTE3MzU0MDEyNGE0Mjg1YTMyODQ4MDUxYmEyZjVmYTdlYWU0NTUxZWVkY2M5ZTMyMzAzN2Y5ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVhOTI5M2ZkODA1NGI2ZTQ3MjQ4MzczZjM5ZjRkZDc3ODAwMTA1ZWI3NTgzNDg2ODcyNTQyODVjZDEyODJiNzgifQ"
+        },
+        {
+          "resource": "repo://src/integrations/install/installer.ts#L654-L676",
+          "version": "repo-lines-v1:sha256:08a8a34e83d2067f008fc2c249bb1d321dc079affe15984a350563e94a85f76c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjZGRjMjhmMmUzYTA4NDFiZDdmOTQ5YWFmNTM3MThiODRlNGJiOTg2MmFkMDBhMTY3ZjI1YTMwOTQ5NTk1YzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4MzZkMzZhNzZjMDA1YmRhOWI4ZGQ2NzZmYmVmOGM3YTM1NDFiNDM5YTFjNWIyY2VmMTFkZDEwNDc2MDYxNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhZjAxYWI3ZDA5MjJlN2JhZTUzNzA3OWNlZGVkNGZmYjRiNTRkMDYyYzA3NjVkNWIyNGMwNjQ5MDVmYTQ0MDYifQ"
         }
       ]
     },
@@ -283,7 +299,7 @@
       "statement": "getHostIntegrationStatus reports installed only when both the skill and the config entry are intact, modified when either is partially present, and unsupported when the requested scope does not exist for the host.",
       "evidence": [
         {
-          "resource": "repo://src/integrations/install/installer.ts#L347-L369",
+          "resource": "repo://src/integrations/install/installer.ts#L361-L383",
           "version": "repo-lines-v1:sha256:e637663282c437c534cc66771f75782a8dc4653e10263153500394d3063f1062:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0ZmIyNDViMjVmZjNlNzQ5MDFjYzk4ZDhiMDI2NWFjZGUyOGI5MWQzOGQ0YmIyZDZjNGQ4NmMyMGZlZGE0YTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwMmRjYjIwMTNjYmE4YzliOGU2NzQ0NTBmYmZmNjIzM2VjMzgxYTE4ZGE5ZWZlOGY2NDgwZjZhZjA2ZDExMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmZmQ4MTNjYTc1NTZhNWY1ZTE5MzU2YmE2NTUwZTk0MjIxNzU5MWRkYmI5NzZkNTEwOGQ2YTQ3OTRkMjNkMDgifQ"
         }
       ]
@@ -403,7 +419,7 @@
       "statement": "The canonical skill bundle root is restricted to SKILL.md, an agents/ tree of host agent manifests, and a references/ tree; inventorySkill rejects any other top-level path, requires a real (non-symlink) directory, and requires SKILL.md at the root.",
       "evidence": [
         {
-          "resource": "repo://src/integrations/install/skill-bundle.ts#L13-L13",
+          "resource": "repo://src/integrations/install/skill-bundle.ts#L14-L14",
           "version": "repo-lines-v1:sha256:921316ed8b59205721614ff9f521d38ac4a8ed89d70feca559c8cd5983dcb322:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTIxMzE2ZWQ4YjU5MjA1NzIxNjE0ZmY5ZjUyMWQzOGFjNGE4ZWQ4OWQ3MGZlY2E1NTljOGNkNTk4M2RjYjMyMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTIxMzE2ZWQ4YjU5MjA1NzIxNjE0ZmY5ZjUyMWQzOGFjNGE4ZWQ4OWQ3MGZlY2E1NTljOGNkNTk4M2RjYjMyMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzJkY2MyZjk3NGE1NjcyZGRlNzQ3Y2M5MzgwOTVjZTk0NjdhZWY2NGUzNTQ4MWJjMWYzMGU1NTQyY2QyZWJmMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDAwMWFlMWIyYTNhZjQyZjU0ZjgxMTM0MzU1OWE0YjI1ZjFhZTY1YTRmYmJmZTM1ZjFhN2E1MWQyOGVlZDM0YyJ9"
         },
         {
@@ -500,7 +516,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.1",
-    "at": "2026-10-07T08:10:39.081Z"
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-12T08:24:07.067Z"
   }
 }

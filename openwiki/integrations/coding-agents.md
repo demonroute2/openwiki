@@ -1,8 +1,8 @@
 ---
 type: integration guide
 title: Coding-Agent Integrations (IBM Bob/Codex/Claude/OpenCode/Cursor/Kiro/Oh My Pi/Antigravity/Copilot)
-description: How OpenWiki runs inside a host coding agent through the ten-tool MCP page-job protocol, how install writes host config and the shared skill bundle, the Pi package extension, the AGENTS.md/CLAUDE.md managed markers, and the divided ownership between host research and OpenWiki finalization.
-tags: [integrations, mcp, coding-agents, installation, page-job, host, copilot]
+description: How OpenWiki runs inside a host coding agent through the ten-tool MCP page-job protocol, how install writes host config and the shared (optionally co-owned) skill bundle, the Pi package extension, the AGENTS.md/CLAUDE.md managed markers, and the divided ownership between host research and OpenWiki finalization.
+tags: [integrations, mcp, coding-agents, installation, page-job, host, copilot, co-ownership]
 sources:
   - id: openwiki-source-f317ee207e1653d2033c81a4
     resource: repo://CONTRIBUTING.md
@@ -58,10 +58,10 @@ sources:
     resource: repo://src/integrations/pi/openwiki.ts
   - id: openwiki-source-349c953869b025f9d4935470
     resource: repo://src/platform/language.ts
-generated: { by: "openwiki/0.7.1", at: "2026-10-07T08:10:39.081Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-12T08:24:07.067Z" }
 verified:
-  - by: openwiki/0.7.1
-    at: 2026-10-07T08:10:39.081Z
+  - by: openwiki/0.7.2
+    at: 2026-10-12T08:24:07.067Z
 ---
 
 # Coding-Agent Integrations (IBM Bob/Codex/Claude/OpenCode/Cursor/Kiro/Oh My Pi/Antigravity/Copilot)
@@ -355,29 +355,62 @@ at the root. The bundle root is restricted to `SKILL.md`, an `agents/` tree
 (host agent manifests such as `agents/bob.yaml` and `agents/openai.yaml`), and a
 `references/` tree; any other path is rejected. On install, a
 `.openwiki-install.json` **receipt** records the owning package, OpenWiki
-version, host target, installed MCP command, and per-file hashes.
-`inspectInstallation` uses the receipt to classify a destination as
-`not-installed`, `installed` (intact), or `modified` (present but altered or
-unmanaged).
+version, the installed MCP command for each owning host, and per-file hashes.
+
+The receipt's `owners` field (`Partial<Record<HostTargetId, HostMcpServerCommand>>`)
+allows several hosts to share one skill directory. Hosts that read the same
+skill path — for example IBM Bob and Codex both use `.agents/skills/openwiki` —
+can co-own a single installed skill, each with its own recorded MCP invocation.
+A single-owner install keeps the original one-host receipt shape (serialized
+with `target`/`mcpServerCommand` fields rather than `owners`), so installations
+that never share a directory are byte-for-byte unchanged; a multi-owner install
+serializes the full `owners` map. `readReceipt` accepts either shape and normalizes
+both to the `owners` map.
+
+`inspectInstallation(directory, target)` uses the receipt to classify a
+destination. It returns `not-installed` when the directory is absent, `modified`
+when the directory exists but its file hashes no longer match the receipt (or
+the receipt is missing/invalid), and `installed` only when the directory is
+intact **and** the inspecting `target` is among the receipt's `owners`.
+Crucially, an intact directory owned only by _other_ hosts reports
+`not-installed` for this target while still returning that receipt — the
+calling host can then join the existing installation rather than treat it as a
+conflict. A `modified` destination (present but altered or unmanaged) is
+refused on install unless `--force`.
 
 ### Transactional install/uninstall
 
-`install` stages the bundle into a private sibling directory, verifies the staged
-copy matches the canonical inventory, writes the receipt, then commits by
-snapshotting the config, mutating it, moving any prior skill aside, and atomically
-moving the staged skill into place. On any failure it rolls back the config and
-prior skill; an incomplete rollback is surfaced as an `AggregateError`. When the
-installed state already matches the requested version, command, and files, it
-only reconciles config and reports whether anything changed. A `modified`
-destination is refused unless `--force`, which preserves the prior skill as a
-timestamped backup.
+`install` resolves the scope, inventories the canonical bundle, and inspects
+the destination. A `modified` destination is refused unless `--force`, which
+later preserves the prior skill as a timestamped backup. **Current-version fast
+path:** when `inspectInstallation` reports `installed` and the receipt's
+version, the target's recorded MCP command, and file hashes all match the
+current request, the installer only reconciles config (reporting whether
+anything changed) and does not touch the skill directory. **New install,
+upgrade, or join:** it stages the bundle into a private sibling directory,
+re-inventories the staged copy and rejects it if it differs from the canonical
+inventory, and writes a fresh receipt whose `owners` merges any existing
+owners (`{ ...inspection.receipt?.owners, [target.id]: mcpServerCommand }`) so a
+joining host adds itself without dropping the others — this is exactly the path
+taken when a target inspects an intact directory owned only by other hosts
+(status `not-installed` with a receipt). It then commits by
+snapshotting the config, mutating it, moving any prior skill aside, and
+atomically moving the staged skill into place. On any failure it rolls back the
+config and prior skill and removes the staging directory; an incomplete
+rollback is surfaced as an `AggregateError`.
 
-`uninstall` refuses to remove a `modified` skill or a modified/unmanaged config
-entry, snapshots the config for rollback, removes the managed entry, moves the
-skill to a cleanup backup, and prunes now-empty skill parent directories.
-`status` reports `installed` only when both the skill and the config entry are
-intact, `modified` when either is partially present, and `unsupported` when the
-requested scope does not exist for the host.
+`uninstall` refuses to remove a `modified` skill or a modified/unmanaged
+config entry. **Remaining owners:** when other hosts still own the skill
+directory, `uninstall` writes a reduced receipt (`ownersWithout`, which drops
+the leaving host from the `owners` map) in place instead of removing the
+directory, so the shared skill survives for the remaining hosts. Only when the
+leaving host is the last owner does it move the skill to a cleanup backup.
+Either way it snapshots the config for rollback, removes the managed config
+entry, and prunes now-empty skill parent directories (skipped while a shared
+skill remains). `status` reports `installed` only when both the skill and the
+config entry for the inspected target are intact, `modified` when either is
+partially present, and `unsupported` when the requested scope does not exist
+for the host.
 
 ## User-level vs project scope
 
@@ -448,3 +481,8 @@ adapter; `protocol.test.ts` covers schema validation; `repository-root.test.ts`
 covers root resolution and its safety refusals; and `installer.test.ts`,
 `config-adapters.test.ts`, `skill.test.ts`, and `package-contents.test.ts` cover
 the transactional installer, config ownership, and packaged bundle.
+`installer.test.ts` additionally pins the co-ownership flow: hosts that share a
+skill directory (Codex with IBM Bob, Antigravity CLI with Codex) install and
+report `installed` independently, the joining host's install merges
+`owners`, and `uninstall` of one owner writes a reduced receipt while the other
+owner keeps reporting `installed`.

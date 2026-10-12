@@ -44,10 +44,12 @@ sources:
     resource: repo://src/integrations/core/protocol.ts
   - id: openwiki-source-58835b77ce38a0dd1fed8d09
     resource: repo://src/integrations/core/session-manager.ts
-generated: { by: "openwiki/0.7.1", at: "2026-10-07T08:10:39.081Z" }
+  - id: openwiki-source-c194ba7f94bf86a83012a7b4
+    resource: repo://src/integrations/install/registry.ts
+generated: { by: "openwiki/0.7.2", at: "2026-10-12T08:24:07.067Z" }
 verified:
-  - by: openwiki/0.7.1
-    at: 2026-10-07T08:10:39.081Z
+  - by: openwiki/0.7.2
+    at: 2026-10-12T08:24:07.067Z
 ---
 
 # Architecture Overview
@@ -73,11 +75,11 @@ selects the personal brain. See [Two modes](../concepts/two-modes.md).
 **Driver** decides which model and tools do the authoring. In _native_
 generation, OpenWiki resolves a configured provider, builds its own chat model,
 and runs its own DeepAgents workers. In _host-driven_ generation, a coding agent
-(Codex, Claude Code, OpenCode, Cursor, IBM Bob / Bob Shell, Kiro, Oh My Pi, or
-Antigravity) uses its own authenticated model and native repository tools, while
-OpenWiki exposes the durable page-job lifecycle over MCP and owns validation
-and finalization. Host-driven runs currently support only repository code wikis,
-not personal brains.
+(Codex, Claude Code, OpenCode, Cursor, IBM Bob / Bob Shell, Kiro, Oh My Pi,
+Antigravity, or GitHub Copilot CLI) uses its own authenticated model and native
+repository tools, while OpenWiki exposes the durable page-job lifecycle over
+MCP and owns validation and finalization. Host-driven runs currently support
+only repository code wikis, not personal brains.
 
 ```mermaid
 flowchart TD
@@ -238,6 +240,15 @@ work, lets in-flight workers submit or skip, and is rethrown before finish so
 the run never finalizes with pending jobs. If a worker fails on a provider
 rate limit, the live pool size is lowered by one (never below 1) and a notice
 is emitted; other skip causes keep the pool size.
+
+Rate limiting is detected by `isRateLimitError`, which walks an error's `cause`
+chain so wrapped SDK errors are recognized: it matches an HTTP 429 in
+`status`/`statusCode`/`code`, an AWS SDK (Bedrock) `ThrottlingException` name,
+or `$metadata.httpStatusCode === 429`, plus common provider error codes and
+message text. A worker that fails on a rate limit is surfaced to the pool
+immediately instead of being retried at once, since the provider is asking for
+less traffic; the pool then lowers its live size and lets other workers
+continue.
 
 **Tracing.** Every planner and page worker in one repository run shares a single
 LangSmith thread id from `resolveTraceThreadId(runId)` — the durable `runId` by

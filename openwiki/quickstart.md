@@ -36,10 +36,10 @@ sources:
     resource: repo://src/integrations/install/registry.ts
   - id: openwiki-source-349c953869b025f9d4935470
     resource: repo://src/platform/language.ts
-generated: { by: "openwiki/0.7.1", at: "2026-10-07T08:10:39.081Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-12T08:24:07.067Z" }
 verified:
-  - by: openwiki/0.7.1
-    at: 2026-10-07T08:10:39.081Z
+  - by: openwiki/0.7.2
+    at: 2026-10-12T08:24:07.067Z
 ---
 
 # OpenWiki Quickstart
@@ -55,7 +55,7 @@ matches your task. Read this first, then follow the links below.
 
 ## What OpenWiki is
 
-OpenWiki is published as the `openwiki` npm package (v0.7.1), a Node.js
+OpenWiki is published as the `openwiki` npm package (v0.7.2), a Node.js
 (>=22.22.0) CLI whose binary resolves to `dist/cli/cli.js`. Its purpose, per the
 package manifest, is "a CLI that uses a DeepAgents documentation agent to
 generate and maintain an OpenWiki for a codebase." The runtime is a DeepAgents
@@ -228,8 +228,11 @@ By default a native run documents one page per worker. Set
 that many page workers at once; each worker still owns exactly one page, the
 quickstart page is held back until every other page has finished so its
 task-routing map links to pages that exist, and every page remains a durable
-resume unit. A worker that fails on a provider rate limit lowers the live
-concurrency by one (never below `1`) and restores its page for the next run.
+resume unit. A worker that fails on a provider rate limit (HTTP 429 or a Bedrock
+`ThrottlingException`, recognized by `isRateLimitError`) breaks its retry loop
+without consuming its second attempt, lowers the live concurrency by one (never
+below `1`), and restores its page for the next run so it is re-attempted on
+resume.
 For worker-scaling, retry, and output-token details see
 [Repository Generation Lifecycle](./workflows/repository-generation.md)
 and [Configuration and Environment](./operations/configuration.md).
@@ -266,4 +269,7 @@ revisions and additions, `retractedClaimIds` for removals); OpenWiki
 automatically retains current issue-free Claims and makes the full Claim set
 available through on-demand `openwiki_inspect_page_claims` for broad rewrites.
 See [Coding-Agent Integrations](./integrations/coding-agents.md) for
-install scope, the host registry, and the host-driven lifecycle boundary.
+install scope, the host registry, and the host-driven lifecycle boundary. Hosts
+that share a skill directory can co-own the installation: a target whose shared
+directory is intact and owned only by other hosts reports `not-installed` (with
+the existing receipt), allowing the target to join it rather than reinstall.

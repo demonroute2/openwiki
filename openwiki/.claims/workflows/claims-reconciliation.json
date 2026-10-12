@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:e7eaa0fd9b4ce01b8852b85e28bed6cb644afdc8b7c05763ad040885b376dc5a",
+  "pageVersion": "sha256:d41abc1f5df69db53f5ae792e7783ac892553153fa0a7f9a8f607b79bac20ff9",
   "claims": [
     {
       "id": "claim_b4fc5fda11a9482d91f562eef48a86f6",
@@ -341,7 +341,7 @@
       "statement": "inspectRepositoryPageClaims returns the complete compact Claim set (without opaque evidence versions) for the current pending page only and throws invalid_state for any other job; it backs the inspect_claims tool that workers call on demand before intentionally revising or removing otherwise-current content, and ordinary focused updates should not call it.",
       "evidence": [
         {
-          "resource": "repo://src/agent/repository-runner.ts#L927-L934",
+          "resource": "repo://src/agent/repository-runner.ts#L937-L944",
           "version": "repo-lines-v1:sha256:c8f900ac4c1f4b84fe72b3363a307c2246b9ed3353e1c05982023277761c37b3:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmE3MjA2NDE1MWE2YmFiMzQ1NjQxYmNmMDI1OWRlZGRiYWZhZTA5YjA3NDQ2MDljNGE5NzI4NzhmZDE0NjZlMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2EzZTQ2Zjk0Mjc2YjZmNmY0ZWQxZjAyYWY3OGJlZjZhMmVlMWM0MzlkZDU1ODRiOTczOTQ4MzEzMjE0ZDJiNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGEzMzBjMzYzOTM3MWE5ZGY0YmI0NDhkNDE0YmE4ZWFjNmQwOGI4OGY4OTg3ZDdjMjZhOTMyOGVlZTU5ZmNmMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2ZiNGQ1MmY1MDA0MDY0ZjJmNWE2ODI1MWUwMTQ3OTdkMTllMzZlZmExYTg4MzQzOGI3ODNmN2M1NWNkM2UyNCJ9"
         },
         {
@@ -447,14 +447,14 @@
           "version": "repo-lines-v1:sha256:cc7ea2faac85c61b318b7cc436a1af94f74bbe6a7cd40ea63b55d7ebaed43b14:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNjdkMWExYTU3NmY3N2VjZWQwNjRmZmM2OTQ0Yjg0MGIwMzkxMzU2NDgxMDA2ODhlNzJkNWZjNzk3NGFjMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ2YTdmNzk1MTk2NGMyZGUwMGNlMDlhMzQ4YTg3YTcxNDc0OTM1NDMxNzI3ZjMxYThhMWE0ZmY1NGUwZjAxMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk5YjBiNWZlOGMwYWQ2YTg3MzVmNTg3MDQxYjk1NDcxMmZhZDQ2NWRmMjNmYzZmZTgyYjdkNTdlNDZjZDFiNjAifQ"
         },
         {
-          "resource": "repo://src/agent/repository-runner.ts#L940-L968",
+          "resource": "repo://src/agent/repository-runner.ts#L950-L978",
           "version": "repo-lines-v1:sha256:7d848c6913632294c183f7efe7ba1fe10a75b82887372f2f53497eaac2e4df9c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0OWIzNzAwYmMwMDc3MzkzZjBiMjRlZmZlNzQ1ZWFiZDYyMDg3NjgxNTI5MTI3Y2RiOTkyOGQzNmJkMmM0NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3MDgwYzFiNjMyN2VlOGE5YTRmMTljY2IyOWZlYTViMjk3OGQ4ZTBmNjViNDllOTg0MDU2YzY2ZWU2ZTZiN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiMjc4NWNlMjJlMjA3ZDdhNzcyYjI2YzhjYzEzM2IzOWViNzkwODg0MjYyZjgxZmI2MmNjNGMzMDQwZDliMjUifQ"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.1",
-    "at": "2026-10-07T08:10:39.081Z"
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-12T08:24:07.067Z"
   }
 }

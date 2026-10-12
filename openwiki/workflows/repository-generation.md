@@ -44,10 +44,10 @@ sources:
     resource: repo://test/agent/repository-runner.test.ts
   - id: openwiki-source-77febf5d49f26cc2405db8dd
     resource: repo://test/generation/repository-run.test.ts
-generated: { by: "openwiki/0.7.1", at: "2026-10-07T08:10:39.081Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-12T08:24:07.067Z" }
 verified:
-  - by: openwiki/0.7.1
-    at: 2026-10-07T08:10:39.081Z
+  - by: openwiki/0.7.2
+    at: 2026-10-12T08:24:07.067Z
 ---
 
 # Repository Generation Lifecycle
@@ -245,9 +245,16 @@ provider rate limit, the runner restores the page to its pre-worker snapshot via
 page if none existed) and restores the Claims sidecar, but does not write a
 checkpoint or change the job status — so both attempts start from identical
 state. A rate-limit failure breaks the loop immediately rather than retrying at
-once, so the provider can recover. Only after the loop is exhausted does
-`runPageAgent` call `skipRepositoryPage`, which durably marks the job `skipped`
-and writes the checkpoint, then emits a deferred-page warning.
+once, so the provider can recover. Because the break happens before the restore
+and the loop body never advances past the rate-limited attempt, a rate-limit
+failure does **not** consume the second `PAGE_WORKER_ATTEMPT_LIMIT` attempt — the
+skipped page (with its snapshot) is returned to the caller, which surfaces it
+back to the concurrency pool for the remaining workers. Only after the loop is
+exhausted by ordinary retries does `runPageAgent` call `skipRepositoryPage`,
+which durably marks the job `skipped` and writes the checkpoint, then emits a
+deferred-page warning. A rate-limited page reaches `skipRepositoryPage` on the
+same path (the loop break falls through to it), but with no between-attempts
+restore, so its `pageRestoreCalls` count stays zero.
 
 ```mermaid
 flowchart TD
@@ -256,19 +263,25 @@ flowchart TD
     Loop -- yes --> Attempt[runPageWorkerAttempt fresh worker]
     Attempt --> Check{outcome}
     Check -- submitted --> Done([return submitted])
-    Check -- skipped --> RL{rate limit or last attempt}
-    RL -- no, retryable --> Restore[restoreRepositoryPage to snapshot]
+    Check -- skipped --> RL{isRateLimitError?}
+    RL -- yes, rate limit --> PoolBreak[break loop without restoring page]
+    PoolBreak --> Skip[skipRepositoryPage with snapshot]
+    RL -- no --> Last{last attempt?}
+    Last -- no, retryable --> Restore[restoreRepositoryPage to snapshot]
     Restore --> Loop
-    RL -- yes, give up --> Skip[skipRepositoryPage with snapshot]
+    Last -- yes, exhausted --> Skip
     Skip --> Warn[emit deferred page warning]
-    Warn --> Ret([return skipped])
+    Warn --> Ret([return skipped with snapshot to pool])
     Loop -- no --> Skip
 ```
 
 `runPageAgent` retry-before-skip control flow. A single snapshot is captured
 once; `restoreRepositoryPage` resets the page between attempts without touching
-the checkpoint; `skipRepositoryPage` is called only after every attempt is
-exhausted.
+the checkpoint. A rate-limit failure branches straight to `skipRepositoryPage`
+without restoring the page, so it spends exactly one attempt and never reaches
+the second attempt. `skipRepositoryPage` is called only after the loop exits —
+either because every ordinary attempt was exhausted or because a rate limit
+broke out early.
 
 The test "retries a failed page worker once before completing the page" verifies
 the recovery path: `pageRestoreCalls` is 1 (the between-attempts restore),
@@ -579,7 +592,35 @@ ignored for a single worker (`slot === 0`).
 When a worker is skipped due to a provider rate-limit error (`isRateLimitError`),
 the pool shrinks its live `size` by one (never below 1) and emits a user-facing
 message. The remaining workers continue; the fatal-error guard ensures the run
-never finalizes with pending jobs.
+never finalizes with pending jobs. The pool only shrinks for a concurrent run
+(`pool.size > 1`); a single-worker run keeps its size and reports the throttle
+without lowering concurrency.
+
+`isRateLimitError` walks the error's `cause` chain (tracking visited objects to
+avoid loops) and recognizes a throttle from any of:
+
+- an HTTP `429` in `status`, `statusCode`, or the numeric `code` field,
+- an error `name` of `ThrottlingException` (the AWS SDK throttle name),
+- an `$metadata.httpStatusCode` of `429` on an object whose `$metadata` is a
+  record (how the AWS SDK carries the status for Bedrock errors),
+- a string `code` matching the `rate.?limit` pattern, or
+- a `message` matching `429`, `rate.?limit`, or `too many requests`.
+
+The cause-chain walk is what catches wrapped SDK errors: a provider may surface
+the throttle inside a `cause` rather than at the top level. AWS Bedrock is the
+edge case the matcher is built around — a Bedrock throttle may arrive mid-stream
+as a `ThrottlingException` whose only signal is the `name` (with the status only
+in `$metadata.httpStatusCode`), and its token-quota message
+(`"Too many tokens"`) matches no rate-limit text, so the `name` and
+`$metadata` checks rather than the message check are what recognize it. The
+tests "lowers concurrency after a rate-limited worker and continues" (a plain
+429) and "lowers concurrency after a Bedrock token-quota throttle" (a
+`ThrottlingException` with `$metadata.httpStatusCode: 429`) both verify that the
+throttled page spends exactly one attempt (`pageRestoreCalls` is 0), one
+`skipRepositoryPage` restore (`restoreCalls` is 1), one skipped job, and a
+`"Reduced page concurrency to 2"` message, while "does not lower concurrency for
+an ordinary worker failure" verifies a non-rate-limit error is retried and the
+pool keeps its size.
 
 ### Fatal-error handling
 

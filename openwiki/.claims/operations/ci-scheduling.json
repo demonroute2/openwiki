@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:fdd9dc471628fe883b98ff5d7e5ff3182c3311191b3fbd074f9a0704018715b9",
+  "pageVersion": "sha256:1840bed92fb64b2516d0e275be02e799ef1491dd437162f9e169a616876cb3af",
   "claims": [
     {
       "id": "claim_4f1bb9562e1846dc92e1f9ba3ad68ed8",
@@ -323,10 +323,44 @@
           "version": "repo-lines-v1:sha256:fdfc63c7c509f3962429207db3e666da9535cca806fc471f555cc15aa1f50261:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4M2FhNTY2NzFmOGNjNDQyM2U4ZjdlNDQyYjA5NmJlZTZkMDk4ZWI3OWE3YTliNTkwMDJjOTNiZTFkNjgwNDRjIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
         }
       ]
+    },
+    {
+      "id": "claim_c45d4bbeb56d4d6181548d06bdaa6f41",
+      "statement": "During a scheduled CI run, provider throttling is treated as a transient condition rather than a per-page defect. isRateLimitError walks an error's cause chain and returns true for a 429 status/statusCode/code, a ThrottlingException name (Bedrock's mid-stream throttle, which carries no HTTP status), a 429 $metadata.httpStatusCode, a code matching rate.?limit, or a message matching 429/rate.?limit/too many requests; a Bedrock ThrottlingException is therefore recognized the same way as a direct 429 even though its 'Too many tokens' message matches no rate-limit text. A worker skipped on a recognized rate-limit error lowers the live pool size by one (never below 1) and reports 'Reduced page concurrency to <n> after a provider rate limit', and the skipped page is restored to its pre-run snapshot and left pending for the next run; an ordinary failure is retried once from the same snapshot before the page is skipped and does not lower concurrency. Retry attempts default to 3, or 5 when OPENWIKI_PAGE_CONCURRENCY is above 1 (override with OPENWIKI_PROVIDER_RETRY_ATTEMPTS).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L289-L298",
+          "version": "repo-lines-v1:sha256:bf5a78fc4de2027dc30384a5d9f1c5af3a2716cc44e1b4217b91ec0228ea9133:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjM2VmMTIxMDAzMzRhYzVhNDRhYjYyMmY1OWEzY2EzYTMwOWQxMGQ0NzJmNTc5MjhlNWFlMDlmMTFhYzA4OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyZjg3M2RjMGM3NzU5ZTNiMTRmNTcxNzM0YWJjYWNjYWZmNWY4NGE1ZmZmOGM4ODdmOTdkMTdhMjdhY2U5MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhhZWZmYTg4Njk3Mjk2ZTA4MzliNzM2NGE0Nzg0ODU4MTM4ZjQzNDA2NjNjYWQ1YjQ0YzY0YzFjMjU3NjYyM2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM5NjIyMzExYTZjOWFmMzM2YjVkZjRhZTQ1ZjM3MDAyYThkZjRlZTMyOThjMTBjOTZjZmUyMjI0ZmJmY2ZkYzkifQ"
+        },
+        {
+          "resource": "repo://src/agent/repository-runner.ts#L727-L737",
+          "version": "repo-lines-v1:sha256:dcc765b39236452190e5ab90c5505b6f3164acb6d9f775c23894956e68514f59:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxMjU4MzJhZmZjYmQ3NWEyNjhlODdjYzlmZDM2MTA2ZTI0YTM3MTM0YjBjZjMyNmM1ZDk3NDMxNzYwMTMyZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5MDVkMzNmYjM2ODFmNmIxZThlMjJjMzU0OWFlMTQ3OGVjOThjNTZkMzE4MDBhN2YyZDg3MDNiMzljOWM4ODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0YWVjM2ViZjM4NTQxMmQ2Mzk2MjhmNmVkZTIxZWJlN2IxOGQyYTQ2NWI2MmU2ZDIxMzYwYmNlMzIxNzVhNDYifQ"
+        },
+        {
+          "resource": "repo://src/agent/repository-runner.ts#L822-L851",
+          "version": "repo-lines-v1:sha256:d28cd6e964860e44457958f3f46579a8c43d003d9176cb4bbd4b86f73b0feaa9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxNzVlMDQwZmY5NjExZDIyOTg5YjQ0YWQ2Y2MyMTYyYWI1N2Y4NmI4MTc2ZmRlN2Q5YjJhNTQzZDQxMjcwMzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxZTUwMGU4YjczZjcxYjk4OTJiNjNhMGUwZTA1NjRhNGNkZjk3OWU5MGE5YTlhNWUxNmNjZGMxMmU1ZDFlYTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxYWMxNjQ5MjU2ODI4MDExYzcwOWJlNWE2NjM3M2Q1ZTIyZWM2YTRkZTlkYjBkOTRmNGY5NmIzNDIzNmNkNGMifQ"
+        },
+        {
+          "resource": "repo://src/agent/repository-runner.ts#L866-L904",
+          "version": "repo-lines-v1:sha256:624f07c49b6234a5c56190d411e0afd4fed558d8e4197761e9f15241ccd99305:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3NGFlN2U0N2Q5NDI3Y2YzNzAwYmI0ZmY1YmMxNTJjMDE2NjljZDQ2MTAzOGRhMTYyYmM5MWJmZDYxNWZhYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4OTFlZTc1MjFiNDgxZjIyODNiOTcxZGZmMWU4ZWJhMzU2YzU0MWM1YzU5MWRhNTVjNWNmZWQ2Njc2YzQ4NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmZWNkZWEzZGI0YjgyMTFmYTFlM2VlZDg1NTdlM2YzMDlkM2Y4YzBjY2E1ZTRhNTZkMzc5MDNkYWQ1ZGYwZjEifQ"
+        },
+        {
+          "resource": "repo://src/config/constants.ts#L84-L91",
+          "version": "repo-lines-v1:sha256:8752f1e09fe4f797c611febdd9365a8df343e5a1f876ef1fff6df0f4fe4bc0f6:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjgzYTI4ODhiMjM4MzA3NjM2MmEyNjExY2IyNDM1ZTQ0OGIzM2FkZTljOWFlNGYyNzlhNGRmNDlhOWE1NGE0NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGViOWRjMjQ1NDFjYWVkYWE1ZWNiZjc5YWU0YzI0YWI1YThiNjY0MGY1MjcxOGZmNjI5MjNkYzQ2YTI4ZjUzNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTRhMjI5ZGY4NTkwNDcwN2U3MGMwZDY2N2ExNDM1ODBiNjg3ZjNiOThlNzg5YTM2N2I4ZmRjYTEzMzVhYTE3MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmE3YjY0YjE2ZDkzNTIwMDFiMTlkY2YwY2QzYWUyMDY1ZDY1ZGQ1NDYzOTUwZGU4OWRlMzZiYWEzMjBmYjc4NyJ9"
+        },
+        {
+          "resource": "repo://test/agent/repository-runner.test.ts#L1188-L1252",
+          "version": "repo-lines-v1:sha256:2a8f0f9610f113bfef739b53323e2507e773e7a7580974897b7f12e02b94f81d:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1ODM5Y2YxZGJkYTdmNzdmZjM2NGM5ZDQyM2IzODRkNjMzNjgxYzRkYWNmNWE0Nzg0YjkyZTY1M2IzZDI2MTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkMGEwY2NiN2QyNWI1NmVlNzdjYTQzZjAxOTBkMDVhZjhhOTUyYzNjNWVjNDQ2Y2ZlZThjMzY5NDc1YzliMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA5ODA5MGQ5NWUzYjdjNDExNWVhZjUyOGYzZjBhM2U5ZGQ1YWE0NjcwNjkxMDVmZjU3ZDM0ODFkYTc4ZjdmM2MifQ"
+        },
+        {
+          "resource": "repo://test/agent/repository-runner.test.ts#L1335-L1404",
+          "version": "repo-lines-v1:sha256:0fe35e9ab14620af4070d3b5fef62a53d70c158364943373b0762cba0c68e690:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhMjczNjJhODU0OGZmMDJmMzk4M2Q5MDJkNzBhNTJjOWE5NzBiMTViNzE1ZTllNjcxOTZhMzE4MmEzNTBjMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlMmU4MzRmNGRlNWYxNGE1NWRiNDQwOGU2YjBlZmVhZGYyN2NmYjE4YmE2NmQzOTNhNDU1Mzk4YmJiNGU4NDkifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.1",
-    "at": "2026-10-07T08:10:39.081Z"
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-12T08:24:07.067Z"
   }
 }

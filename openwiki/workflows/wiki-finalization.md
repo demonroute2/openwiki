@@ -22,10 +22,12 @@ sources:
     resource: repo://src/okf/generated-provenance.ts
   - id: openwiki-source-5835357b69a5869be210533b
     resource: repo://src/okf/index-sync.ts
-generated: { by: "openwiki/0.7.1", at: "2026-10-07T08:10:39.081Z" }
+  - id: openwiki-source-bd0d30d47b383471080b7506
+    resource: repo://src/retrieval/wiki.ts
+generated: { by: "openwiki/0.7.2", at: "2026-10-12T08:24:07.067Z" }
 verified:
-  - by: openwiki/0.7.1
-    at: 2026-10-07T08:10:39.081Z
+  - by: openwiki/0.7.2
+    at: 2026-10-12T08:24:07.067Z
 ---
 
 # Wiki Finalization and Link Integrity
@@ -217,6 +219,19 @@ The validator enforces these invariants on generated pages:
   duplicates suffixed `-1`, `-2`, …, and Unicode letters, numbers, and combining
   marks kept — matching `github-slugger` so non-English and decomposed-accent
   anchors resolve.
+- **Symbol-only headings get a readable retrieval anchor.** A heading whose
+  visible text is all punctuation or symbols (e.g. `## 🚀`) slugs to the empty
+  string, because emoji and symbols are stripped as punctuation. The link
+  validator simply skips an empty slug — such a heading exposes no anchor a link
+  could target, so a link to it is never flagged as broken on slug grounds.
+  Retrieval (`src/retrieval/wiki.ts`) takes a different, complementary step:
+  `headingSections` aliases the first empty-slug heading to the stable literal
+  `section` (suffixing `-1`, `-2`, … only when `section` is already taken by a
+  real GitHub anchor, and never displacing an existing anchor) so that
+  `openwiki_search` references to that section use an addressable anchor and
+  can be opened with `openwiki_read` (`readWikiSections`), which would otherwise
+  reject the empty anchor as unknown. The alias is a retrieval-only convenience;
+  it does not change the on-page Markdown or the anchors the validator exposes.
 
 Reserved control files (`index.md`, `log.md`, `INSTRUCTIONS.md`) and dotfiles
 are excluded from scanning. A `WikiLinkReport` records files scanned, links

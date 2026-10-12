@@ -1,7 +1,7 @@
 ---
 type: operations-guide
 title: CI Scheduling and Self-Update
-description: How OpenWiki runs scheduled self-updates on GitHub Actions, GitLab CI, and Bitbucket Pipelines to open a docs pull request on change, how the scheduling module parses and manages cron expressions, and the ephemeral-runner resume caveat.
+description: How OpenWiki runs scheduled self-updates on GitHub Actions, GitLab CI, and Bitbucket Pipelines to open a docs pull request on change, how the scheduling module parses and manages cron expressions, provider rate-limit handling during a CI run, and the ephemeral-runner resume caveat.
 tags:
   [
     scheduling,
@@ -27,6 +27,8 @@ sources:
     resource: repo://examples/openwiki-update.yml
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
+  - id: openwiki-source-6cb3236b8c1412a26d832fcf
+    resource: repo://src/agent/repository-runner.ts
   - id: openwiki-source-3fc16f0371ced4d94330f06c
     resource: repo://src/cli/commands.ts
   - id: openwiki-source-106c72a9cb6dd904077fc747
@@ -35,12 +37,14 @@ sources:
     resource: repo://src/config/constants.ts
   - id: openwiki-source-c923e23504de7a6af7799a24
     resource: repo://src/scheduling/schedules.ts
+  - id: openwiki-source-ec5a58d1a89689ead79b8150
+    resource: repo://test/agent/repository-runner.test.ts
   - id: openwiki-source-7cf549510278a62e11ae8280
     resource: repo://test/scheduling/schedules.test.ts
-generated: { by: "openwiki/0.7.1", at: "2026-10-07T08:10:39.081Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-12T08:24:07.067Z" }
 verified:
-  - by: openwiki/0.7.1
-    at: 2026-10-07T08:10:39.081Z
+  - by: openwiki/0.7.2
+    at: 2026-10-12T08:24:07.067Z
 ---
 
 # CI Scheduling and Self-Update
@@ -357,6 +361,45 @@ secret (a GitHub OAuth token) and switch to `OPENWIKI_PROVIDER: copilot` with
 same OpenRouter/GLM defaults, so external repositories can keep them or
 substitute their own provider and model.
 
+### Rate limits and concurrency during a CI run
+
+A scheduled CI run documents every page in the queue with the configured
+provider, and a provider that throttles mid-run is the common CI failure mode.
+OpenWiki treats provider throttling as a transient, recoverable condition rather
+than a per-page defect so a throttled page is not lost on an ephemeral runner.
+
+The repository runner recognizes rate-limit errors through `isRateLimitError`,
+which walks an error's `cause` chain and returns true on any of:
+
+- a `429` `status`, `statusCode`, or `code`;
+- a `ThrottlingException` `name` (AWS Bedrock's mid-stream throttle, which
+  carries no HTTP status because it arrives as a stream event);
+- a `429` `$metadata.httpStatusCode` (the AWS SDK's location for the Converse
+  API status);
+- a string `code` matching `rate.?limit`; or
+- a `message` matching `429`, `rate.?limit`, or `too many requests`.
+
+A Bedrock `ThrottlingException` arriving mid-generation is therefore recognized
+the same way as a direct HTTP 429, even though its "Too many tokens" message
+matches no rate-limit text by itself.
+
+When a page worker is skipped because of a recognized rate-limit error, the
+runner lowers the live pool `size` by one (never below `1`) and reports
+`Reduced page concurrency to <n> after a provider rate limit` so later workers
+issue fewer concurrent requests. The skipped page is restored to its pre-run
+snapshot and left `pending` in the durable queue, so the next scheduled run
+picks it up. A worker that fails for any other reason is retried once from the
+same snapshot before the page is skipped, and an ordinary failure does **not**
+lower concurrency. With the concurrency defaults the shipped examples use
+(`OPENWIKI_PAGE_CONCURRENCY` unset → `1`), there is no pool to lower, but the
+same `isRateLimitError` path still skips and restores the page rather than
+treating the throttle as a generation failure.
+
+LangChain retries transient provider errors around each worker attempt. Retry
+attempts default to `3`, or `5` when `OPENWIKI_PAGE_CONCURRENCY` is above `1`,
+because concurrent workers make transient rate limits the common failure;
+override with `OPENWIKI_PROVIDER_RETRY_ATTEMPTS` (a positive integer).
+
 ### Ephemeral-runner resume caveat
 
 Repository generation and update are resumable: OpenWiki records in-progress work
@@ -387,9 +430,21 @@ belong in integration tests):
 - `getSavedPowerScheduleStatus` — returns `null` when no `pmset` schedule is
   saved and mirrors the saved `pmset` fields into a status object otherwise.
 
-The shared LangSmith thread grouping that gives one trace thread per update is
-pinned by the repository-runner suite, not the scheduling suite; see
-[repository generation](../workflows/repository-generation.md) and
+The shared LangSmith thread grouping that gives one trace thread per update, and
+the CI-relevant rate-limit handling, are pinned by the repository-runner suite
+(`test/agent/repository-runner.test.ts`), not the scheduling suite:
+
+- `isRateLimitError` is unit-tested directly for `status`/`statusCode`/`429`
+  `code`, Bedrock `ThrottlingException` with and without an HTTP status, wrapped
+  `cause` chains, unrelated failures, and non-object inputs.
+- The worker pool lowers concurrency after a rate-limited worker and continues,
+  and again after a Bedrock token-quota throttle (`ThrottlingException`,
+  "Too many tokens"), emitting `Reduced page concurrency to <n>` exactly once.
+  It does **not** lower concurrency for an ordinary worker failure (that page
+  is reset and retried once), and it lets in-flight workers settle before
+  rethrowing a fatal submission error.
+
+See [repository generation](../workflows/repository-generation.md) and
 [testing overview](../testing/overview.md) for those tests.
 
 ## Related pages

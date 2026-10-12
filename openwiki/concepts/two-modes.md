@@ -12,6 +12,8 @@ sources:
     resource: repo://src/agent/index.ts
   - id: openwiki-source-8bf337d8927152d7d30230b4
     resource: repo://src/agent/prompt.ts
+  - id: openwiki-source-6cb3236b8c1412a26d832fcf
+    resource: repo://src/agent/repository-runner.ts
   - id: openwiki-source-5d1891104d4c886504a5cc7d
     resource: repo://src/agent/types.ts
   - id: openwiki-source-69abc6f0f641147820a274bc
@@ -24,6 +26,8 @@ sources:
     resource: repo://src/cli/run-mode.ts
   - id: openwiki-source-106c72a9cb6dd904077fc747
     resource: repo://src/cli/runners.ts
+  - id: openwiki-source-278e7e180eac811fc1a24f7a
+    resource: repo://src/config/constants.ts
   - id: openwiki-source-7d433875b0854d0b8b951be0
     resource: repo://src/config/openwiki-home.ts
   - id: openwiki-source-01c7d07d9800df0261f20efb
@@ -32,12 +36,14 @@ sources:
     resource: repo://src/ingestion/ingestion.ts
   - id: openwiki-source-3c86ca0bb7fbb79f2be66a2b
     resource: repo://src/integrations/core/retrieval-tools.ts
+  - id: openwiki-source-58835b77ce38a0dd1fed8d09
+    resource: repo://src/integrations/core/session-manager.ts
   - id: openwiki-source-eab9328975981f427c4218d0
     resource: repo://src/integrations/mcp/server.ts
-generated: { by: "openwiki/0.7.1", at: "2026-10-07T08:10:39.081Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-12T08:24:07.067Z" }
 verified:
-  - by: openwiki/0.7.1
-    at: 2026-10-07T08:10:39.081Z
+  - by: openwiki/0.7.2
+    at: 2026-10-12T08:24:07.067Z
 ---
 
 # Code vs Personal Modes
@@ -169,16 +175,27 @@ apply to code repository wikis only:
   that reference Claims state are rejected. This ownership boundary is applied
   only in `repository` output mode — `isClaimsPath` returns false unless
   `outputMode === "repository"`.
+- **Parallel page workers.** Native repository `init`/`update` runs can
+  document several pages at once. `resolvePageConcurrency` reads
+  `OPENWIKI_PAGE_CONCURRENCY` (default `1`, range `1`–`8`) and is applied only in
+  `runNativeRepositoryGeneration`, which the agent invokes solely for
+  `outputMode === "repository"` `init`/`update`. Each worker owns exactly one
+  page job, completed pages stay durable resume units, and a worker that hits a
+  provider rate limit lowers the run's concurrency by one for the rest of the
+  run. Coding-agent integrations use their host's sequential page lifecycle, so
+  this setting controls the native CLI's workers only.
 - **Host-driven (coding-agent) runs.** Running OpenWiki inside Codex, Claude
   Code, OpenCode, and the other registered coding agents currently supports
   repository code wikis only, not personal brains. The MCP lifecycle the host
   drives (`openwiki_begin` → `openwiki_submit_plan` → `openwiki_next_page` →
-  `openwiki_submit_page` → `openwiki_finish`) operates on a resolved Git
-  repository root and `openwiki/`, exposes read-only repository-wiki retrieval
-  plus the page-job generation queue, and never hands the host the connector
-  ingestion tools. The host researches the repository with its own native
-  tools, so connector-sourced context (including LangSmith) is not yet
-  supported in that path.
+  `openwiki_submit_page` → `openwiki_finish`, with optional on-demand
+  `openwiki_inspect_page_claims`) operates on a resolved Git repository root
+  and `openwiki/`, exposes read-only repository-wiki retrieval
+  (`openwiki_search`/`openwiki_read`/`openwiki_list_workspaces`/`openwiki_list_wikis`,
+  which are local, read-only, and model-free) plus the page-job generation
+  queue, and never hands the host the connector ingestion tools. The host
+  researches the repository with its own native tools, so connector-sourced
+  context (including LangSmith) is not yet supported in that path.
 
 ## Capabilities that apply to personal mode only
 

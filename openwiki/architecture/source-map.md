@@ -90,6 +90,8 @@ sources:
     resource: repo://src/okf/frontmatter.ts
   - id: openwiki-source-2f1e489d53c52a0582582659
     resource: repo://src/platform/fs-errors.ts
+  - id: openwiki-source-bd0d30d47b383471080b7506
+    resource: repo://src/retrieval/wiki.ts
   - id: openwiki-source-c923e23504de7a6af7799a24
     resource: repo://src/scheduling/schedules.ts
   - id: openwiki-source-7388b63c6f928737a7109779
@@ -108,10 +110,10 @@ sources:
     resource: repo://src/visualize/server.ts
   - id: openwiki-source-d485c898eb60ebb173072eab
     resource: repo://test/agent/stream-redaction.test.ts
-generated: { by: "openwiki/0.7.1", at: "2026-10-07T08:10:39.081Z" }
+generated: { by: "openwiki/0.7.2", at: "2026-10-12T08:24:07.067Z" }
 verified:
-  - by: openwiki/0.7.1
-    at: 2026-10-07T08:10:39.081Z
+  - by: openwiki/0.7.2
+    at: 2026-10-12T08:24:07.067Z
 ---
 
 # Source Map
@@ -283,7 +285,13 @@ if it still fails it calls `skipRepositoryPage` to restore the page and mark it
 `skipped`, collecting the snapshots and passing them to `finishRepositoryRun`
 so skipped pages keep their pre-work content and are reconsidered on the next
 update. A rate-limit failure surfaces to the pool immediately rather than
-retrying. Each worker attempt is given an `inspect_claims` tool (backing
+retrying. `isRateLimitError` recognizes provider throttling by checking HTTP
+429 status fields, common rate-limit error codes and message text, and the AWS
+SDK `$metadata.httpStatusCode`, following `cause` chains so wrapped SDK errors
+are recognized too; it specifically matches the Bedrock `ThrottlingException`
+name (the signature of a mid-stream throttle, whose token-quota "Too many
+tokens" message matches no rate-limit text). Each worker attempt is given an
+`inspect_claims` tool (backing
 `inspectRepositoryPageClaims`) and a `submit_page` tool (backing the sparse
 `submitRepositoryPage`). The planner and every page worker are grouped into one
 LangSmith thread: `resolveTraceThreadId` (from `config/constants.ts`) supplies
@@ -417,6 +425,12 @@ validation via `WIKI_RETRIEVAL_LIMITS`) and `readWikiSections` (exact Markdown
 sections selected from search refs). It consumes the OKF frontmatter reader,
 the claims store for page grounding, and the `linking/` subsystem for workspace
 resolution; both functions are called by `integrations/core/retrieval-tools.ts`.
+When sectionizing a page, a heading whose GitHub slug is empty because it is
+symbol-only (for example `## 🚀`) would produce an anchor `readWikiSections`
+rejects; `SYMBOL_ONLY_HEADING_ANCHOR` (the constant `"section"`) aliases that
+unaddressable heading to a stable readable anchor — appending a numeric suffix
+when `section` is already taken — without displacing any GitHub-generated anchor,
+so the heading stays reachable by both `searchWiki` and `readWikiSections`.
 
 ### linking — named wiki workspaces
 
